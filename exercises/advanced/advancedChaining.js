@@ -20,13 +20,27 @@ var lib = require('../../lib/advancedChainingLib');
 // We're using Clarifai's API to recognize concepts in an image into a list of concepts
 // Visit the following url to sign up for a free account
 //     https://portal.clarifai.com/signup
-// Once you're in, create a new application on your Clarifai User Dashboard. Clarifai will 
+// Once you're in, create a new application on your Clarifai User Dashboard. Clarifai will
 // automatically generate an API key which you can find by opening up the new
 // application tile.  Accept the default 'all scopes' setting for the key or modify it
 // to give it the `Predict on Public and Custom Models` scope. When your key
 // is ready, copy and add it to the `advancedChainingLib.js` file.
 
+// module.exports = {
+//   predictImage: predictImage,
+//   getIntersection: getIntersection,
+//   getGitHubProfile: getGitHubProfile,
+// };
+
 var searchCommonConceptsFromGitHubProfiles = function (githubHandles) {
+  return Promise.all(githubHandles.map(handle => lib.getGitHubProfile(handle)))
+    .then(profiles => Promise.all(profiles.map(profile => lib.predictImage(profile.avatarUrl)))
+      .then(concepts => lib.getIntersection(concepts)));
+  // return new Promise((resolve, reject) => {
+  //   Promise.all(githubHandles.map(handle => lib.getGitHubProfile(handle)))
+  //     .then(profiles => Promise.all(profiles.map(profile => lib.predictImage(profile.avatarUrl)))
+  //       .then(concepts => resolve(lib.getIntersection(concepts))));
+  // });
 };
 
 // Export these functions so we can unit test them
